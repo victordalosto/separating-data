@@ -1,0 +1,1 @@
+This program was used to retrieve information from databases made in Excel, and to export and handle them as desired in different databases.

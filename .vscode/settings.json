@@ -1,0 +1,4 @@
+{
+    "maven.view": "flat",
+    "java.debug.settings.vmArgs": "-Xmx9g",
+}
