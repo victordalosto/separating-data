@@ -6,8 +6,10 @@
 
 package lib;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.CopyOption;
@@ -29,7 +31,7 @@ public class HandlesCSV {
      * @param path (String) Caminho do arquivo CSV contendo o caminho das pastas.
      * @return ArrayList contendo todos os arquivos em String.
      */
-    public static ArrayList<String> getSNVs(String path) {
+    public static ArrayList<String> getPaths(String path) {
         ArrayList<String> lista = new ArrayList<>();
         try (Scanner scanner = new Scanner(new File(path))) {
             while (scanner.hasNext()) {
@@ -54,11 +56,14 @@ public class HandlesCSV {
     public static void updateLog(String text, String path) {
         Path caminhoLog = Paths.get(path);
         try {
-            if (caminhoLog.toFile().isFile()) {
-                Files.writeString(Paths.get(path), ("\n" + text), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+            if (!caminhoLog.toFile().isFile()) {
+                Files.writeString(Paths.get(path), text, StandardCharsets.UTF_8, StandardOpenOption.CREATE); // Create new file
             } else {
-                // Create new file
-                Files.writeString(Paths.get(path), text, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+                BufferedReader atualContent = new BufferedReader(new FileReader(path));
+                if (isValidString(atualContent.readLine()))
+                    text = "\n" + text;
+                Files.writeString(Paths.get(path), text, StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+                atualContent.close();
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -70,7 +75,7 @@ public class HandlesCSV {
 
     /** {@code UpdateLOG}. Inserts the 'text' information in the log of the path inserted
      * or create a new one if it doesn't exists.
-     * @param text (String): Text that will be updated in the Log
+     * @param text List<String>: Text that will be updated in the Log
      * @param path (String): Path to a Log.txt File
      */
     public static void updateLog(List<String> lista, String path) {
@@ -124,6 +129,7 @@ public class HandlesCSV {
 
 
 
+
     /** Compara se todos os elementos da list1 estão presentes na list2
      * @param list1 Lista específica que tem alguns dos elementos
      * @param list2 Lista geral com todos os elementos
@@ -147,7 +153,7 @@ public class HandlesCSV {
 
 
 
-    /** {@code copyFolder}. Walks a folder and copy every file in Sources Fodler to Destiny */
+    /** {@code copyFolder}. Walks a folder and copy every file in Source Folder to Destination */
     public static void copyFolder(String src, String dest, boolean overwrite) {
         try {
             Files.walk(Paths.get(src)).forEach(a -> {
@@ -181,7 +187,7 @@ public class HandlesCSV {
         }
     }
 
-    
+
 
 
     private static boolean isValidString(String line) {
